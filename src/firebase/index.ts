@@ -4,7 +4,7 @@ import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 
-// 1. Firebase konfigūracija naudojant aplinkos kintamuosius
+// 1. Firebase konfigūracija
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -14,21 +14,20 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// 2. Inicializavimo funkcija (apsaugo nuo dvigubo app kūrimo)
-function getFirebaseServices() {
-  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-  const auth = getAuth(app);
-  const firestore = getFirestore(app);
-  return { app, auth, firestore };
-}
+// 2. Inicializavimas
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+const auth = getAuth(app);
+const firestore = getFirestore(app);
 
-const { app, auth, firestore } = getFirebaseServices();
+// 3. Eksportuojame bazinius objektus
+export { app as firebaseApp, auth, firestore as db };
 
-// 3. Pagrindiniai objektai eksportui
-export { app as firebaseApp, auth, firestore };
+// 4. PRIDĖTA: Eksportuojame HOOK'US, kurių reikalauja tavo puslapiai
+// Tai sutvarkys "Attempted import error: 'useFirestore' is not exported"
+export const useAuth = () => auth;
+export const useFirestore = () => firestore;
 
-// 4. SVARBU: Eksportuojame viską iš kitų failų, kad Assign-Admin ir kiti puslapiai juos matytų
-// Tai išspręs "Module has no exported member" klaidas
+// 5. Eksportuojame viską iš kitų failų
 export * from './provider';
 export * from './client-provider';
 export * from './auth/use-user';
@@ -37,5 +36,5 @@ export * from './firestore/use-doc';
 export * from './errors';
 export * from './error-emitter';
 
-// 5. Jei kiti failai naudoja specifinius tipus
+// 6. Tipai
 export type { FirebaseApp, Auth, Firestore };
