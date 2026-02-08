@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, query } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
 import { firebaseApp } from '@/firebase/provider';
 
 export default function DashboardPage() {
@@ -20,7 +20,6 @@ export default function DashboardPage() {
         return;
       }
 
-      // Kolekcijų pavadinimai iš tavo nuotraukos
       const collectionNames = [
         'applications_administrator',
         'applications_designer',
@@ -28,25 +27,25 @@ export default function DashboardPage() {
         'applications_programmer'
       ];
 
-      const unsubscribes: any[] = [];
       let loadedData: any = {};
+      const unsubscribes: any[] = [];
 
       collectionNames.forEach((name) => {
-        const q = query(collection(db, name));
-        const unsub = onSnapshot(q, (snapshot) => {
+        // Ištriname 'orderBy', nes tavo Firestore gali neturėti 'createdAt' lauko
+        const colRef = collection(db, name);
+        
+        const unsub = onSnapshot(colRef, (snapshot) => {
           loadedData[name] = snapshot.docs.map(doc => ({
             id: doc.id,
-            roleType: name.split('_')[1], // Ištraukiame rolę iš pavadinimo
+            roleType: name.replace('applications_', ''), 
             ...doc.data()
           }));
           
-          // Sujungiam visus masyvus į vieną bendrą sąrašą
           const combined = Object.values(loadedData).flat();
           setAllApplications(combined);
           setLoading(false);
         }, (err) => {
-          console.error(`Klaida su ${name}:`, err);
-          setLoading(false);
+          console.error("Klaida su " + name, err);
         });
         unsubscribes.push(unsub);
       });
@@ -57,35 +56,39 @@ export default function DashboardPage() {
     return () => unsubscribeAuth();
   }, [auth, db, router]);
 
-  if (loading) return <div className="p-10 text-white bg-black min-h-screen text-center">Kraunamos visos anketos...</div>;
+  if (loading) return <div className="p-10 text-white bg-black min-h-screen text-center">Kraunama...</div>;
 
   return (
     <div className="p-8 bg-black min-h-screen text-white">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-red-600 uppercase tracking-tighter">
-          DETM Valdymo Skydas
-        </h1>
+        <h1 className="text-3xl font-bold mb-8 text-red-600">DETM VALDYMAS</h1>
 
         {allApplications.length === 0 ? (
-          <p className="text-zinc-500">Šiuo metu anketų nėra nei vienoje kategorijoje.</p>
+          <div className="p-10 border border-zinc-800 text-center">
+            <p className="text-zinc-500">Anketų nerasta. Patikrinkite kolekcijų pavadinimus Firebase konsolėje.</p>
+          </div>
         ) : (
           <div className="grid gap-4">
             {allApplications.map((app) => (
-              <div key={app.id} className="p-6 bg-zinc-950 border border-zinc-800 rounded-lg border-l-4 border-l-red-600">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-xs font-black uppercase bg-red-600 px-2 py-1 rounded">
+              <div key={app.id} className="p-5 bg-zinc-950 border border-zinc-800 rounded-lg">
+                <div className="flex justify-between mb-4">
+                  <span className="text-xs font-bold uppercase text-red-500 tracking-widest">
                     {app.roleType}
                   </span>
-                  <span className="text-zinc-600 text-xs">ID: {app.id}</span>
+                  <span className="text-zinc-700 text-[10px] italic">ID: {app.id}</span>
                 </div>
                 
-                {/* Rodome duomenis pagal tavo Firestore struktūrą */}
-                <div className="space-y-2">
-                  <p><span className="text-zinc-500">Amžius:</span> {app.age}</p>
-                  <p><span className="text-zinc-500">Patirtis:</span> {app.databaseKnowledge || app.bugFixingTime || 'Nenurodyta'}</p>
-                  <p className="mt-4 text-zinc-300 bg-zinc-900 p-3 rounded italic">
-                    "{app.attributeCheckSystem || 'Nėra papildomos informacijos'}"
-                  </p>
+                {/* Dinamiškai atvaizduojame visus rastus laukus iš Firestore */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                  {Object.entries(app).map(([key, value]) => {
+                    if (key === 'id' || key === 'roleType') return null;
+                    return (
+                      <div key={key} className="flex flex-col p-2 bg-zinc-900/30 rounded">
+                        <span className="text-zinc-500 text-xs uppercase">{key}:</span>
+                        <span className="text-zinc-200">{String(value)}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             ))}
