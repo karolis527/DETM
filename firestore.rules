@@ -1,0 +1,126 @@
+/**
+ * @fileoverview Firestore Security Rules for Moderator and Administrator Applications.
+ *
+ * Core Philosophy:
+ * This ruleset prioritizes a role-based access control model where only authenticated administrators can read application data.
+ * Anonymous users can create applications, but data access is restricted.
+ *
+ * Data Structure:
+ * - /applications_moderator/{applicationId}: Stores moderator applications. Accessible only to administrators.
+ * - /applications_administrator/{applicationId}: Stores administrator applications. Accessible only to administrators.
+ * - /applications_programmer/{applicationId}: Stores programmer applications. Accessible only to administrators.
+ * - /applications_designer/{applicationId}: Stores designer applications. Accessible only to administrators.
+ * - /roles_administrator/{userId}: Stores administrator role assignments. Presence of a document indicates administrator status.
+ *
+ * Key Security Decisions:
+ * - Anonymous users are allowed to CREATE applications.
+ * - Only authenticated users with the 'administrator' role can read (GET, LIST) application data.
+ * - No public listing of applications is permitted.
+ *
+ * Denormalization for Authorization:
+ * - The `roles_administrator` collection is used to determine administrator status. This allows us to authorize `get` and `list` operations using the `exists()` function.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Allows administrators to read, create, update, and delete moderator applications. Anonymous users can create applications.
+     * @path /applications_moderator/{applicationId}
+     * @allow (create) - Any user can create a moderator application.
+     * @allow (get, list) - Authenticated administrator can read a moderator application.
+     * @deny (update, delete) - Non-administrator cannot update or delete a moderator application.
+     * @principle Enforces role-based access control for application data, allowing anonymous submissions and administrator-only access.
+     */
+    match /applications_moderator/{applicationId} {
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      allow create: if true;
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Allows administrators to read, create, update, and delete administrator applications. Anonymous users can create applications.
+     * @path /applications_administrator/{applicationId}
+     * @allow (create) - Any user can create a administrator application.
+     * @allow (get, list) - Authenticated administrator can read a administrator application.
+     * @deny (update, delete) - Non-administrator cannot update or delete a administrator application.
+     * @principle Enforces role-based access control for application data, allowing anonymous submissions and administrator-only access.
+     */
+    match /applications_administrator/{applicationId} {
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      allow create: if true;
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+    
+    /**
+     * @description Allows administrators to read, create, update, and delete programmer applications. Anonymous users can create applications.
+     * @path /applications_programmer/{applicationId}
+     * @allow (create) - Any user can create a programmer application.
+     * @allow (get, list) - Authenticated administrator can read a programmer application.
+     * @deny (update, delete) - Non-administrator cannot update or delete a programmer application.
+     * @principle Enforces role-based access control for application data, allowing anonymous submissions and administrator-only access.
+     */
+    match /applications_programmer/{applicationId} {
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      allow create: if true;
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Allows administrators to read, create, update, and delete designer applications. Anonymous users can create applications.
+     * @path /applications_designer/{applicationId}
+     * @allow (create) - Any user can create a designer application.
+     * @allow (get, list) - Authenticated administrator can read a designer application.
+     * @deny (update, delete) - Non-administrator cannot update or delete a designer application.
+     * @principle Enforces role-based access control for application data, allowing anonymous submissions and administrator-only access.
+     */
+    match /applications_designer/{applicationId} {
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      allow create: if true;
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Allows administrators to manage administrator roles by creating and deleting user role documents.
+     * @path /roles_administrator/{userId}
+     * @allow (get) - Authenticated user can read their own role document.
+     * @allow (create) - Authenticated user can create their own role document. This is for the first admin setup.
+     * @allow (delete) - Only administrators can revoke admin roles.
+     * @deny (list, update) - Listing and updating of admin roles is not permitted.
+     * @principle Uses DBAC (Database Backed Access Control) to manage administrator privileges.
+     */
+    match /roles_administrator/{userId} {
+      allow get: if isSignedIn() && request.auth.uid == userId;
+      allow list: if false;
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if false;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    // --- Helper functions ---
+
+    /**
+     * @description Checks if the current user is signed in.
+     * @return {boolean} True if the user is signed in, false otherwise.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the current user is an administrator by verifying the existence of their user ID in the `roles_administrator` collection.
+     * @return {boolean} True if the user is an administrator, false otherwise.
+     */
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_administrator/$(request.auth.uid));
+    }
+  }
+}

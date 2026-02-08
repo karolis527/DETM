@@ -1,0 +1,551 @@
+
+{
+  "entities": {
+    "ModeratorApplication": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ModeratorApplication",
+      "type": "object",
+      "description": "Represents an application to become a moderator.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Moderator Application."
+        },
+        "discordUsername": {
+          "type": "string",
+          "description": "The Discord username of the applicant."
+        },
+        "age": {
+          "type": "number",
+          "description": "Applicant's age."
+        },
+        "timeSpentOnPlatforms": {
+          "type": "string",
+          "description": "Time spent daily on TikTok, Messenger, and Discord."
+        },
+        "discordModerationSkills": {
+          "type": "string",
+          "description": "Knowledge of Discord moderation features (timeout, ban, etc.)."
+        },
+        "reactionToSpam": {
+          "type": "string",
+          "description": "How the applicant would react to a member spamming or advertising."
+        },
+        "fakeAccountRecognition": {
+          "type": "string",
+          "description": "Ability to identify fake accounts or spies from other teams."
+        },
+        "inappropriateBehaviorResponse": {
+          "type": "string",
+          "description": "How to handle a member with a DETM background behaving inappropriately."
+        },
+        "chatRaidResponse": {
+          "type": "string",
+          "description": "How to handle a massive conflict ('chat raid') in a Messenger group."
+        },
+        "attributeComplianceCheck": {
+          "type": "string",
+          "description": "Willingness to check if all 40+ members are following attribute usage rules."
+        },
+        "patienceLevel": {
+          "type": "string",
+          "description": "Patience level on a scale of 1 to 10, with an explanation."
+        },
+        "explainingRulesToNewcomer": {
+          "type": "string",
+          "description": "How the applicant would explain the importance of DETM rules to a newcomer."
+        },
+        "teamworkPreference": {
+          "type": "string",
+          "description": "Preference for teamwork versus individual decision-making."
+        },
+        "offCommunityBehavior": {
+          "type": "string",
+          "description": "How to act when seeing a member not adhering to DETM values outside the community."
+        },
+        "botConfigurationExperience": {
+          "type": "string",
+          "description": "Experience with bot configuration (Automod)."
+        },
+        "unprovenComplaintsResponse": {
+          "type": "string",
+          "description": "How to handle private messages with complaints about another member without proof."
+        },
+        "warningOrPunishment": {
+          "type": "string",
+          "description": "Stance on 'warning first, then punishment' versus a stricter approach."
+        },
+        "applicationDate": {
+          "type": "string",
+          "description": "Date the application was submitted.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the application (e.g., 'pending', 'approved', 'rejected')."
+        }
+      },
+      "required": [
+        "id",
+        "discordUsername",
+        "age",
+        "timeSpentOnPlatforms",
+        "discordModerationSkills",
+        "reactionToSpam",
+        "fakeAccountRecognition",
+        "inappropriateBehaviorResponse",
+        "chatRaidResponse",
+        "attributeComplianceCheck",
+        "patienceLevel",
+        "explainingRulesToNewcomer",
+        "teamworkPreference",
+        "offCommunityBehavior",
+        "botConfigurationExperience",
+        "unprovenComplaintsResponse",
+        "warningOrPunishment",
+        "applicationDate",
+        "status"
+      ]
+    },
+    "AdministratorApplication": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AdministratorApplication",
+      "type": "object",
+      "description": "Represents an application to become an administrator, focusing on leadership and strategy.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Administrator Application."
+        },
+        "nickname": {
+          "type": "string",
+          "description": "Applicant's nickname."
+        },
+        "age": {
+          "type": "number",
+          "description": "Applicant's age."
+        },
+        "reasonForChoosingDETM": {
+          "type": "string",
+          "description": "Why the applicant chose DETM over other TikTok teams."
+        },
+        "characterTraits": {
+          "type": "string",
+          "description": "Three words describing the applicant's character and why they are suitable for an admin."
+        },
+        "leadershipExperience": {
+          "type": "string",
+          "description": "Experience in leading people in other projects, games, or work."
+        },
+        "handlingAdminAbuse": {
+          "type": "string",
+          "description": "How the applicant would react to another admin abusing their power."
+        },
+        "visionForDETM": {
+          "type": "string",
+          "description": "The applicant's vision for where DETM should be in 6 months."
+        },
+        "solvingInactivity": {
+          "type": "string",
+          "description": "How the applicant would solve a sudden drop in team activity."
+        },
+        "handlingPublicInsults": {
+          "type": "string",
+          "description": "How the applicant remains calm when publicly insulted, with an example."
+        },
+        "timeCommitment": {
+          "type": "string",
+          "description": "How much time per day can be dedicated to DETM matters."
+        },
+        "removingFriend": {
+          "type": "string",
+          "description": "Whether the applicant would remove a friend for breaking rules."
+        },
+        "attractingNewMembers": {
+          "type": "string",
+          "description": "How the applicant would attract new, quality members to the team."
+        },
+        "resolvingInternalConflicts": {
+          "type": "string",
+          "description": "What the applicant would do about internal cliques and conflicts."
+        },
+        "meetingAndDelegationSkills": {
+          "type": "string",
+          "description": "Ability to conduct meetings and clearly delegate tasks."
+        },
+        "opinionOnReputation": {
+          "type": "string",
+          "description": "The applicant's opinion on DETM's current reputation and what needs fixing."
+        },
+        "whyChooseYou": {
+          "type": "string",
+          "description": "Why the applicant should be chosen over other candidates."
+        },
+        "applicationDate": {
+          "type": "string",
+          "description": "Date the application was submitted.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the application (e.g., 'pending', 'approved', 'rejected')."
+        }
+      },
+      "required": [
+        "id",
+        "nickname",
+        "age",
+        "reasonForChoosingDETM",
+        "characterTraits",
+        "leadershipExperience",
+        "handlingAdminAbuse",
+        "visionForDETM",
+        "solvingInactivity",
+        "handlingPublicInsults",
+        "timeCommitment",
+        "removingFriend",
+        "attractingNewMembers",
+        "resolvingInternalConflicts",
+        "meetingAndDelegationSkills",
+        "opinionOnReputation",
+        "whyChooseYou",
+        "applicationDate",
+        "status"
+      ]
+    },
+    "ProgrammerApplication": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ProgrammerApplication",
+      "type": "object",
+      "description": "Represents an application to become a programmer, focusing on technical skills.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Programmer Application."
+        },
+        "discordUsername": {
+          "type": "string",
+          "description": "Applicant's Discord username."
+        },
+        "programmingExperience": {
+          "type": "string",
+          "description": "Applicant's programming experience in years/months."
+        },
+        "age": {
+          "type": "number",
+          "description": "Applicant's age."
+        },
+        "programmingLanguages": {
+          "type": "string",
+          "description": "Programming languages the applicant uses (JS, Python, C++, etc.)."
+        },
+        "discordBotExperience": {
+          "type": "string",
+          "description": "Experience creating Discord bots from scratch and their functions."
+        },
+        "databaseKnowledge": {
+          "type": "string",
+          "description": "Knowledge of databases like SQL or MongoDB."
+        },
+        "tiktokApiIntegration": {
+          "type": "string",
+          "description": "Ability to connect TikTok API with Discord."
+        },
+        "attributeCheckSystem": {
+          "type": "string",
+          "description": "How the applicant would create a system to automatically check for DETM attributes."
+        },
+        "registrationFormCreation": {
+          "type": "string",
+          "description": "Ability to create a registration form (web or bot) that stores member data."
+        },
+        "bugFixingTime": {
+          "type": "string",
+          "description": "Time commitment for fixing bugs if the system crashes."
+        },
+        "securityMeasures": {
+          "type": "string",
+          "description": "How to protect the server from token logging or other attacks."
+        },
+        "webhookExperience": {
+          "type": "string",
+          "description": "Experience working with Webhooks."
+        },
+        "websiteExperience": {
+          "type": "string",
+          "description": "Experience creating web pages."
+        },
+        "serverOptimization": {
+          "type": "string",
+          "description": "How to optimize a Discord server for performance with 100+ members."
+        },
+        "confidentialityAgreement": {
+          "type": "string",
+          "description": "Agreement to work on potentially confidential projects."
+        },
+        "codeStorageTools": {
+          "type": "string",
+          "description": "Tools used for code storage (GitHub, GitLab, etc.)."
+        },
+        "problemSolvingTime": {
+          "type": "string",
+          "description": "Time it would take to find a solution online for an unknown task."
+        },
+        "applicationDate": {
+          "type": "string",
+          "description": "Date the application was submitted.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the application (e.g., 'pending', 'approved', 'rejected')."
+        }
+      },
+      "required": [
+        "id",
+        "discordUsername",
+        "programmingExperience",
+        "age",
+        "programmingLanguages",
+        "discordBotExperience",
+        "databaseKnowledge",
+        "tiktokApiIntegration",
+        "attributeCheckSystem",
+        "registrationFormCreation",
+        "bugFixingTime",
+        "securityMeasures",
+        "webhookExperience",
+        "websiteExperience",
+        "serverOptimization",
+        "confidentialityAgreement",
+        "codeStorageTools",
+        "problemSolvingTime",
+        "applicationDate",
+        "status"
+      ]
+    },
+    "DesignerApplication": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DesignerApplication",
+      "type": "object",
+      "description": "Represents an application to become a designer, focusing on visual skills.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Designer Application."
+        },
+        "discordUsername": {
+          "type": "string",
+          "description": "Applicant's Discord username."
+        },
+        "age": {
+          "type": "number",
+          "description": "Applicant's age."
+        },
+        "designPrograms": {
+          "type": "string",
+          "description": "Graphic design programs used by the applicant."
+        },
+        "experienceWithFrames": {
+          "type": "string",
+          "description": "Experience creating TikTok frames and backgrounds."
+        },
+        "portfolioLink": {
+          "type": "string",
+          "description": "Link to the applicant's portfolio or work samples."
+        },
+        "frameCreationTime": {
+          "type": "string",
+          "description": "Average time to create a quality frame."
+        },
+        "styleDescription": {
+          "type": "string",
+          "description": "Description of style and adaptability to DETM aesthetics."
+        },
+        "handlingFeedback": {
+          "type": "string",
+          "description": "How the applicant would handle a design rejection."
+        },
+        "videoEditingSkills": {
+          "type": "string",
+          "description": "Experience with video editing."
+        },
+        "logoDesignSkills": {
+          "type": "string",
+          "description": "Experience with logo design."
+        },
+        "timeCommitmentWeekly": {
+          "type": "string",
+          "description": "Time commitment per week for design tasks."
+        },
+        "handlingPlagiarism": {
+          "type": "string",
+          "description": "How to react to work being stolen."
+        },
+        "animationSkills": {
+          "type": "string",
+          "description": "Experience with animation."
+        },
+        "opinionOnCurrentArt": {
+          "type": "string",
+          "description": "Opinion on current DETM assets and what to change."
+        },
+        "reasonForJoining": {
+          "type": "string",
+          "description": "Why the applicant wants to design for DETM."
+        },
+        "applicationDate": {
+          "type": "string",
+          "description": "Date the application was submitted.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the application."
+        }
+      },
+      "required": [
+        "id",
+        "discordUsername",
+        "age",
+        "designPrograms",
+        "experienceWithFrames",
+        "portfolioLink",
+        "frameCreationTime",
+        "styleDescription",
+        "handlingFeedback",
+        "videoEditingSkills",
+        "logoDesignSkills",
+        "timeCommitmentWeekly",
+        "handlingPlagiarism",
+        "animationSkills",
+        "opinionOnCurrentArt",
+        "reasonForJoining",
+        "applicationDate",
+        "status"
+      ]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the application (administrator).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User."
+        },
+        "username": {
+          "type": "string",
+          "description": "Username of the user for login."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        },
+        "role": {
+          "type": "string",
+          "description": "Role of the user (e.g., 'administrator')."
+        }
+      },
+      "required": [
+        "id",
+        "username",
+        "email",
+        "role"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/applications_moderator/{applicationId}",
+        "definition": {
+          "entityName": "ModeratorApplication",
+          "schema": {
+            "$ref": "#/backend/entities/ModeratorApplication"
+          },
+          "description": "Stores moderator applications submitted by users. Accessible by administrators only.",
+          "params": [
+            {
+              "name": "applicationId",
+              "description": "Unique identifier for the moderator application."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/applications_administrator/{applicationId}",
+        "definition": {
+          "entityName": "AdministratorApplication",
+          "schema": {
+            "$ref": "#/backend/entities/AdministratorApplication"
+          },
+          "description": "Stores administrator applications submitted by users. Accessible by administrators only.",
+          "params": [
+            {
+              "name": "applicationId",
+              "description": "Unique identifier for the administrator application."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/applications_programmer/{applicationId}",
+        "definition": {
+          "entityName": "ProgrammerApplication",
+          "schema": {
+            "$ref": "#/backend/entities/ProgrammerApplication"
+          },
+          "description": "Stores programmer applications submitted by users. Accessible by administrators only.",
+          "params": [
+            {
+              "name": "applicationId",
+              "description": "Unique identifier for the programmer application."
+            }
+          ]
+        }
+      },
+       {
+        "path": "/applications_designer/{applicationId}",
+        "definition": {
+          "entityName": "DesignerApplication",
+          "schema": {
+            "$ref": "#/backend/entities/DesignerApplication"
+          },
+          "description": "Stores designer applications submitted by users. Accessible by administrators only.",
+          "params": [
+            {
+              "name": "applicationId",
+              "description": "Unique identifier for the designer application."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_administrator/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Collection to store administrator role assignments. Existence of a document indicates the user is an administrator.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to securely manage moderator and administrator applications while adhering to the principles of Authorization Independence and enabling secure list operations (QAPs).\n\n**Authorization Independence & Data Access**: Anonymous users can create applications. The application data itself is stored in collections that are secured to be read only by authenticated administrators. This ensures that the application process remains open without compromising data security. To prevent unauthorized access, no application data includes authorization details. Instead, a simple rule is applied: any authenticated user with the role 'administrator' can access all application data. By removing hierarchical dependencies in authorization, we enable atomic operations and simplify security rules.\n\n**Structure:**\n\n*   **/applications_moderator/{applicationId}**: Stores moderator application data.\n*   **/applications_administrator/{applicationId}**: Stores administrator application data.\n*   **/roles_administrator/{userId}**: Indicates which users have admin roles. This is used for DBAC (Database Backed Access Control).\n\n**QAPs (Rules are not Filters)**: All applications for a given role are stored in the same collection, enforcing a homogeneous security posture. The role assignment is managed via existence checks in `/roles_administrator/{userId}`.\n\n**Additional Considerations**:\n\n*   Email sending can be handled via a Firebase Function triggered on document creation in either `/applications_moderator` or `/applications_administrator`."
+  }
+}

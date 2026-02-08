@@ -1,0 +1,11 @@
+# Settings to manage and configure a Firebase App Hosting backend.
+# https://firebase.google.com/docs/app-hosting/configure
+#
+# This configuration is optimized to operate within the free tier.
+# By setting `maxInstances` to 1, we prevent the application from
+# auto-scaling to multiple instances, which could incur costs.
+runConfig:
+  # Increase this value if you'd like to automatically spin up
+  # more instances in response to increased traffic.
+  # To ensure the application remains free, this is set to 1.
+  maxInstances: 1
