@@ -13,7 +13,6 @@ interface FirebaseServices {
 
 export function initializeFirebase(): FirebaseServices {
   let app: FirebaseApp;
-
   if (getApps().length) {
     app = getApp();
   } else {
@@ -23,26 +22,20 @@ export function initializeFirebase(): FirebaseServices {
   const auth = getAuth(app);
   const firestore = getFirestore(app);
 
-  // PAGRINDINIS PATAISYMAS:
-  // Patikriname, ar kodas veikia naršyklėje (window), ar serveryje.
-  // Jei serveryje - naudojame "inMemoryPersistence", kad nekiltų localStorage klaida.
   if (typeof window !== 'undefined') {
-    setPersistence(auth, browserLocalPersistence).catch((err) => console.error("Auth persistence error:", err));
+    setPersistence(auth, browserLocalPersistence).catch(console.error);
   } else {
-    setPersistence(auth, inMemoryPersistence).catch((err) => console.error("Auth server persistence error:", err));
+    setPersistence(auth, inMemoryPersistence).catch(console.error);
   }
 
-  return {
-    firebaseApp: app,
-    auth: auth,
-    firestore: firestore,
-  };
+  return { firebaseApp: app, auth, firestore };
 }
 
+// Eksportuojame viską iš kitų failų, kad Assign-Admin ir kiti juos rastų
 export * from './provider';
 export * from './client-provider';
+export * from './auth/use-user';
 export * from './firestore/use-collection';
 export * from './firestore/use-doc';
-export * from './auth/use-user';
 export * from './errors';
 export * from './error-emitter';
