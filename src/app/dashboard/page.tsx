@@ -3,81 +3,90 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, collection, query, orderBy, onSnapshot } from 'firebase/firestore';
-import { firebaseApp } from '@/firebase/provider'; // Įsitikink, kad exportuoji firebaseApp
+import { getFirestore, collection, onSnapshot, query } from 'firebase/firestore';
+import { firebaseApp } from '@/firebase/provider';
 
 export default function DashboardPage() {
-  const [applications, setApplications] = useState([]);
+  const [allApplications, setAllApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
   const router = useRouter();
   const db = getFirestore(firebaseApp);
   const auth = getAuth(firebaseApp);
 
   useEffect(() => {
-    // 1. Klausomės Auth būsenos pasikeitimo
-    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        // 2. Jei vartotojas yra, pradedame krauti anketas
-        const q = query(collection(db, 'applications'), orderBy('createdAt', 'desc'));
-        
-        const unsubscribeDocs = onSnapshot(q, (snapshot) => {
-          const apps = snapshot.docs.map(doc => ({
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push('/login');
+        return;
+      }
+
+      // Kolekcijų pavadinimai iš tavo nuotraukos
+      const collectionNames = [
+        'applications_administrator',
+        'applications_designer',
+        'applications_moderator',
+        'applications_programmer'
+      ];
+
+      const unsubscribes: any[] = [];
+      let loadedData: any = {};
+
+      collectionNames.forEach((name) => {
+        const q = query(collection(db, name));
+        const unsub = onSnapshot(q, (snapshot) => {
+          loadedData[name] = snapshot.docs.map(doc => ({
             id: doc.id,
+            roleType: name.split('_')[1], // Ištraukiame rolę iš pavadinimo
             ...doc.data()
           }));
-          setApplications(apps);
+          
+          // Sujungiam visus masyvus į vieną bendrą sąrašą
+          const combined = Object.values(loadedData).flat();
+          setAllApplications(combined);
           setLoading(false);
-        }, (error) => {
-          console.error("Firestore klaida:", error);
+        }, (err) => {
+          console.error(`Klaida su ${name}:`, err);
           setLoading(false);
         });
+        unsubscribes.push(unsub);
+      });
 
-        return () => unsubscribeDocs();
-      } else {
-        // Jei neprisijungęs, metam lauk
-        router.push('/login');
-      }
+      return () => unsubscribes.forEach(un => un());
     });
 
     return () => unsubscribeAuth();
   }, [auth, db, router]);
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-black text-white">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p>Kraunamos anketos...</p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <div className="p-10 text-white bg-black min-h-screen text-center">Kraunamos visos anketos...</div>;
 
   return (
     <div className="p-8 bg-black min-h-screen text-white">
-      <div className="max-w-5xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-red-600">DETM Administracija</h1>
-          <p className="text-sm text-zinc-500">Prisijungta: {user?.email}</p>
-        </div>
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8 text-red-600 uppercase tracking-tighter">
+          DETM Valdymo Skydas
+        </h1>
 
-        {applications.length === 0 ? (
-          <div className="p-12 border border-dashed border-zinc-800 rounded-lg text-center">
-            <p className="text-zinc-500 italic">Anketų šiuo metu nėra.</p>
-          </div>
+        {allApplications.length === 0 ? (
+          <p className="text-zinc-500">Šiuo metu anketų nėra nei vienoje kategorijoje.</p>
         ) : (
           <div className="grid gap-4">
-            {applications.map((app: any) => (
-              <div key={app.id} className="p-6 bg-zinc-950 border border-zinc-800 rounded-lg">
-                <div className="flex justify-between mb-2">
-                  <h3 className="text-lg font-bold text-white">{app.username || 'Narys'}</h3>
-                  <span className="text-xs text-zinc-600">
-                    {app.createdAt?.toDate ? app.createdAt.toDate().toLocaleString() : 'Data nežinoma'}
+            {allApplications.map((app) => (
+              <div key={app.id} className="p-6 bg-zinc-950 border border-zinc-800 rounded-lg border-l-4 border-l-red-600">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-xs font-black uppercase bg-red-600 px-2 py-1 rounded">
+                    {app.roleType}
                   </span>
+                  <span className="text-zinc-600 text-xs">ID: {app.id}</span>
                 </div>
-                <p className="text-zinc-400 text-sm leading-relaxed">{app.message || app.content}</p>
+                
+                {/* Rodome duomenis pagal tavo Firestore struktūrą */}
+                <div className="space-y-2">
+                  <p><span className="text-zinc-500">Amžius:</span> {app.age}</p>
+                  <p><span className="text-zinc-500">Patirtis:</span> {app.databaseKnowledge || app.bugFixingTime || 'Nenurodyta'}</p>
+                  <p className="mt-4 text-zinc-300 bg-zinc-900 p-3 rounded italic">
+                    "{app.attributeCheckSystem || 'Nėra papildomos informacijos'}"
+                  </p>
+                </div>
               </div>
             ))}
           </div>
