@@ -2,7 +2,7 @@
 
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
-import { getAuth, type Auth } from 'firebase/auth';
+import { getAuth, type Auth, setPersistence, browserLocalPersistence, inMemoryPersistence } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 
 interface FirebaseServices {
@@ -11,25 +11,33 @@ interface FirebaseServices {
   firestore: Firestore;
 }
 
-// This function initializes Firebase and should be called on the client side.
 export function initializeFirebase(): FirebaseServices {
+  let app: FirebaseApp;
+
   if (getApps().length) {
-    const app = getApp();
-    return {
-      firebaseApp: app,
-      auth: getAuth(app),
-      firestore: getFirestore(app),
-    };
+    app = getApp();
+  } else {
+    app = initializeApp(firebaseConfig);
   }
 
-  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const firestore = getFirestore(app);
+
+  // PAGRINDINIS PATAISYMAS:
+  // Patikriname, ar kodas veikia naršyklėje (window), ar serveryje.
+  // Jei serveryje - naudojame "inMemoryPersistence", kad nekiltų localStorage klaida.
+  if (typeof window !== 'undefined') {
+    setPersistence(auth, browserLocalPersistence).catch((err) => console.error("Auth persistence error:", err));
+  } else {
+    setPersistence(auth, inMemoryPersistence).catch((err) => console.error("Auth server persistence error:", err));
+  }
+
   return {
     firebaseApp: app,
-    auth: getAuth(app),
-    firestore: getFirestore(app),
+    auth: auth,
+    firestore: firestore,
   };
 }
-
 
 export * from './provider';
 export * from './client-provider';

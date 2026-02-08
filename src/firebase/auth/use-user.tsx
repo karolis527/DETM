@@ -10,8 +10,7 @@ interface UseUserResult {
 }
 
 /**
- * A dedicated hook to get the current user state.
- * It isolates the onAuthStateChanged listener.
+ * Hook'as, kuris stebi vartotojo prisijungimo būseną.
  */
 export function useUser(): UseUserResult {
   const auth = useAuth();
@@ -19,21 +18,20 @@ export function useUser(): UseUserResult {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // If auth is not yet available, we are in a loading state.
+    // Jei Firebase auth dar nepasiekiamas, nieko nedarome
     if (!auth) {
-      setIsLoading(true);
       return;
     }
 
-    // Subscribe to auth state changes.
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    // Prenumeruojame būsenos pasikeitimus
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
       setIsLoading(false);
     });
 
-    // Unsubscribe on cleanup.
+    // Atsijungiame nuo stebėjimo, kai komponentas sunaikinamas
     return () => unsubscribe();
-  }, [auth]); // The effect depends on the auth instance.
+  }, [auth]);
 
   return { user, isLoading };
 }

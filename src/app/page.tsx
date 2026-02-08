@@ -1,13 +1,46 @@
+"use client"; // Pridedame, kad išvengtume serverio/kliento konfliktų su sudėtingais UI komponentais
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight, Shield, UserCog, Code, Palette } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
+  const categories = [
+    {
+      title: "Tapti Moderatorimi",
+      description: "Padėkite palaikyti tvarką ir saugią aplinką serveryje.",
+      content: "Jeigu nori prisijungti prie mūsų Discord administracijos komandos, užpildyk šią anketą ir lauk atsakymo.",
+      icon: <Shield className="w-8 h-8 text-primary" />,
+      href: "/apply/moderator",
+    },
+    {
+      title: "Tapti Administratoriumi",
+      description: "Prisidėkite prie serverio valdymo ir plėtros.",
+      content: "Ieškome patyrusių narių, kurie nori imtis daugiau atsakomybės ir padėti valdyti serverio techninę bei organizacinę pusę.",
+      icon: <UserCog className="w-8 h-8 text-primary" />,
+      href: "/apply/administrator",
+    },
+    {
+      title: "Tapti Programuotoju",
+      description: "Prisidėkite prie techninės serverio pusės ir automatizacijos.",
+      content: "Ieškome programuotojų, kurie nori kurti bot'us, web sistemas ir padėti su techniniais sprendimais.",
+      icon: <Code className="w-8 h-8 text-primary" />,
+      href: "/apply/programmer",
+    },
+    {
+      title: "Tapti Dizaineriu",
+      description: "Būkite atsakingas už komandos vizualinį identitetą.",
+      content: "Atsakingas už komandos įvaizdį, rėmelius, fonus, reklaminius banerius ir kitą atributiką.",
+      icon: <Palette className="w-8 h-8 text-primary" />,
+      href: "/apply/designer",
+    },
+  ];
+
   return (
-    <div className="container mx-auto px-4 py-12 sm:py-16 md:py-24">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl font-headline">
+    <div className="container mx-auto px-4 py-12 sm:py-16 md:py-24 min-h-screen">
+      <div className="text-center mb-16">
+        <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
           DETM Anketos
         </h1>
         <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground">
@@ -15,105 +48,36 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 max-w-7xl mx-auto">
-        <Card className="transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-          <CardHeader className="flex flex-row items-center gap-4">
-            <div className="bg-primary/10 p-3 rounded-lg">
-              <Shield className="w-8 h-8 text-primary" />
-            </div>
-            <div>
-              <CardTitle className="text-2xl font-headline">Tapti Moderatorimi</CardTitle>
-              <CardDescription>
-                Padėkite palaikyti tvarką ir saugią aplinką serveryje.
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-6 text-muted-foreground">
-              Jeigu nori prisijungti prie mūsų Discord administracijos komandos, užpildyk šią anketą ir lauk atsakymo.
-            </p>
-            <Button asChild className="w-full" size="lg">
-              <Link href="/apply/moderator">
-                Pildyti Anketą <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-          <CardHeader className="flex flex-row items-center gap-4">
-            <div className="bg-primary/10 p-3 rounded-lg">
-                <UserCog className="w-8 h-8 text-primary" />
-            </div>
-            <div>
-              <CardTitle className="text-2xl font-headline">Tapti Administratoriumi</CardTitle>
-              <CardDescription>
-                Prisidėkite prie serverio valdymo ir plėtros.
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-6 text-muted-foreground">
-              Ieškome patyrusių narių, kurie nori imtis daugiau atsakomybės ir padėti valdyti serverio techninę bei organizacinę pusę.
-            </p>
-            <Button asChild className="w-full" size="lg">
-              <Link href="/apply/administrator">
-                Pildyti Anketą <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-          <CardHeader className="flex flex-row items-center gap-4">
-            <div className="bg-primary/10 p-3 rounded-lg">
-                <Code className="w-8 h-8 text-primary" />
-            </div>
-            <div>
-              <CardTitle className="text-2xl font-headline">Tapti Programuotoju</CardTitle>
-              <CardDescription>
-                Prisidėkite prie techninės serverio pusės ir automatizacijos.
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-6 text-muted-foreground">
-              Ieškome programuotojų, kurie nori kurti bot'us, web sistemas ir padėti su techniniais sprendimais.
-            </p>
-            <Button asChild className="w-full" size="lg">
-              <Link href="/apply/programmer">
-                Pildyti Anketą <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-        
-        <Card className="transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-          <CardHeader className="flex flex-row items-center gap-4">
-            <div className="bg-primary/10 p-3 rounded-lg">
-                <Palette className="w-8 h-8 text-primary" />
-            </div>
-            <div>
-              <CardTitle className="text-2xl font-headline">Tapti Dizaineriu</CardTitle>
-              <CardDescription>
-                Būkite atsakingas už komandos vizualinį identitetą.
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-6 text-muted-foreground">
-             Atsakingas už komandos įvaizdį, rėmelius, fonus, reklaminius banerius ir kitą atributiką.
-            </p>
-            <Button asChild className="w-full" size="lg">
-              <Link href="/apply/designer">
-                Pildyti Anketą <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4 max-w-7xl mx-auto">
+        {categories.map((item, index) => (
+          <Card key={index} className="flex flex-col h-full transform transition-all duration-300 hover:scale-105 hover:shadow-xl border-border/50 bg-card/50 backdrop-blur-sm">
+            <CardHeader className="flex flex-row items-center gap-4">
+              <div className="bg-primary/10 p-3 rounded-xl">
+                {item.icon}
+              </div>
+              <div className="flex-1">
+                <CardTitle className="text-xl font-bold leading-tight">{item.title}</CardTitle>
+                <CardDescription className="mt-1">
+                  {item.description}
+                </CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent className="flex flex-col flex-1">
+              <p className="mb-6 text-muted-foreground text-sm flex-1">
+                {item.content}
+              </p>
+              <Button asChild className="w-full group" size="lg">
+                <Link href={item.href}>
+                  Pildyti Anketą 
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
       </div>
-       <footer className="text-center mt-20 text-muted-foreground text-sm">
+
+      <footer className="text-center mt-20 text-muted-foreground text-sm border-t border-border pt-10">
         <p>Anketos peržiūra gali užtrukti iki 7 dienų. Atrinkti kandidatai bus informuoti asmeniškai.</p>
       </footer>
     </div>
