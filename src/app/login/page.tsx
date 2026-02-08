@@ -16,7 +16,6 @@ export default function LoginPage() {
   const auth = useAuth();
   const router = useRouter();
 
-  // Saugiklis, kad kodas veiktų tik naršyklėje
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -29,13 +28,19 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // SVARBU: Čia įrašyk savo Firebase registruotą administratoriaus el. paštą
-      // Jei naudojate tik slaptažodį, Firebase vis tiek reikalauja el. pašto.
-      await signInWithEmailAndPassword(auth, "tavo-email@gmail.com", password);
+      // SVARBU: Čia turi būti tavo Firebase užregistruotas el. paštas
+      // Slaptažodis paimamas iš įvesties laukelio
+      await signInWithEmailAndPassword(auth, "admin@detm.com", password);
       router.push('/dashboard'); 
     } catch (err: any) {
-      console.error("Login error:", err);
-      setError('Neteisingas slaptažodis arba sisteminė klaida.');
+      // Konsolėje klaidą matysi tik tu (F12), bet vartotojas ekrane - ne
+      console.error("Prisijungimo klaida"); 
+      
+      // Griežtai nustatome tik saugų tekstą, nenaudojant jokios info iš 'err' objekto
+      setError('Prisijungimas nepavyko. Patikrinkite duomenis.');
+      
+      // Išvalome slaptažodžio laukelį saugumo sumetimais
+      setPassword('');
     } finally {
       setLoading(false);
     }
@@ -52,23 +57,27 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Įveskite administratoriaus slaptažodį</label>
+              <label className="text-sm font-medium">Administratoriaus prieiga</label>
               <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-zinc-900 border-zinc-800 text-white"
-                placeholder="••••••••"
+                className="bg-zinc-900 border-zinc-800 text-white focus:ring-red-600"
+                placeholder="Įveskite slaptažodį"
                 required
               />
             </div>
-            {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+            {error && (
+              <div className="p-3 rounded bg-red-500/10 border border-red-500/50">
+                <p className="text-sm text-red-500 text-center font-medium">{error}</p>
+              </div>
+            )}
             <Button 
               type="submit" 
               disabled={loading || !auth}
-              className="w-full bg-red-600 hover:bg-red-700 text-white"
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold transition-all"
             >
-              {loading ? 'Jungiamasi...' : 'Prisijungti'}
+              {loading ? 'Tikrinama...' : 'Prisijungti'}
             </Button>
           </form>
         </CardContent>
