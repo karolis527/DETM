@@ -2,120 +2,135 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useUser, useFirestore, useDoc, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { useAuth, useFirestore } from '@/firebase'; // Pakeista, kad atitiktų tavo index.ts
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Loader2, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useMemoFirebase } from '@/firebase/provider';
-import type { SecurityRuleContext } from '@/firebase/errors';
 
 export default function AssignAdminPage() {
-  const { user, isLoading: isUserLoading } = useUser();
-  const firestore = useFirestore();
+  const auth = useAuth();
+  const db = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
+  
+  const [user, setUser] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [hasAdminRole, setHasAdminRole] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const adminRoleRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return doc(firestore, 'roles_administrator', user.uid);
-  }, [firestore, user]);
-
-  const { data: adminRoleDoc, isLoading: isAdminRoleLoading } = useDoc(adminRoleRef);
-
-  const hasAdminRole = !!adminRoleDoc;
-
+  // 1. Stebime vartotojo prisijungimą
   useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
+    if (!auth) return;
+    const unsub = auth.onAuthStateChanged((u) => {
+      if (!u) {
+        router.push('/login');
+      } else {
+        setUser(u);
+        checkAdminStatus(u.uid);
+      }
+    });
+    return () => unsub();
+  }, [auth, router]);
+
+  // 2. Patikriname, ar jau yra adminas
+  const checkAdminStatus = async (uid: string) => {
+    if (!db) return;
+    try {
+      const docRef = doc(db, 'roles_administrator', uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setHasAdminRole(true);
+      }
+    } catch (e) {
+      console.error("Klaida tikrinant statusą:", e);
+    } finally {
+      setLoading(false);
     }
-  }, [user, isUserLoading, router]);
+  };
 
   const handleAssignRole = async () => {
-    if (!firestore || !user || !adminRoleRef) {
+    if (!db || !user) {
       toast({
         variant: 'destructive',
         title: 'Klaida',
-        description: 'Vartotojas neprisijungęs arba duomenų bazė nepasiekiama.',
+        description: 'Duomenų bazė nepasiekiama.',
       });
       return;
     }
 
-    if (hasAdminRole) {
-       toast({
-          title: 'Informacija',
-          description: 'Jūs jau turite administratoriaus teises.',
-        });
-       router.push('/dashboard');
-       return;
-    }
-      
     setIsProcessing(true);
     
-    const roleData = { email: user.email, assignedAt: new Date() };
+    try {
+      const roleData = { 
+        email: user.email, 
+        assignedAt: new Date(),
+        uid: user.uid 
+      };
 
-    setDoc(adminRoleRef, roleData)
-      .then(() => {
-        toast({
-          title: 'Sėkmingai atlikta!',
-          description: 'Administratoriaus teisės suteiktos. Būsite nukreiptas į prietaisų skydelį.',
-          className: 'bg-accent text-accent-foreground',
-        });
-        setTimeout(() => router.push('/dashboard'), 2000);
-      })
-      .catch(() => {
-        const permissionError = new FirestorePermissionError({
-          path: adminRoleRef.path,
-          operation: 'create',
-          requestResourceData: roleData,
-        } satisfies SecurityRuleContext);
-        errorEmitter.emit('permission-error', permissionError);
-        toast({
-            variant: 'destructive',
-            title: 'Klaida',
-            description: 'Nepavyko priskirti teisių. Bandykite dar kartą.',
-        });
-      }).finally(() => {
-          setIsProcessing(false);
+      await setDoc(doc(db, 'roles_administrator', user.uid), roleData);
+      
+      toast({
+        title: 'Sėkmingai atlikta!',
+        description: 'Administratoriaus teisės suteiktos.',
       });
+      setHasAdminRole(true);
+      setTimeout(() => router.push('/dashboard'), 1500);
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Klaida',
+        description: 'Nepavyko priskirti teisių. Patikrinkite Firestore Rules.',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  const isLoading = isUserLoading || isAdminRoleLoading;
+  if (loading) return (
+    <div className="flex min-h-screen items-center justify-center bg-black">
+      <Loader2 className="h-10 w-10 animate-spin text-red-600" />
+    </div>
+  );
 
   return (
-    <div className="container flex items-center justify-center py-12">
-      <Card className="w-full max-w-md">
+    <div className="container flex min-h-screen items-center justify-center py-12 bg-black">
+      <Card className="w-full max-w-md border-zinc-800 bg-zinc-950 text-white">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-headline">Administratoriaus Teisių Suteikimas</CardTitle>
-          <CardDescription>
-            Paspauskite mygtuką, kad savo paskyrai suteiktumėte administratoriaus teises.
+          <CardTitle className="text-2xl font-bold uppercase tracking-tighter italic text-red-600">
+            Sistemos Valdymas
+          </CardTitle>
+          <CardDescription className="text-zinc-500">
+            Paskyros teisių konfigūravimas
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-6">
-          {isLoading ? (
-            <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          ) : hasAdminRole ? (
-            <div className="flex flex-col items-center text-center gap-4 p-4 rounded-lg bg-accent/10">
-              <ShieldCheck className="h-12 w-12 text-accent" />
-              <p className="font-medium text-accent-foreground">Jūs jau turite administratoriaus teises.</p>
-              <Button onClick={() => router.push('/dashboard')}>Eiti į Prietaisų Skydelį</Button>
+          {hasAdminRole ? (
+            <div className="flex flex-col items-center text-center gap-4 p-6 rounded-lg bg-red-600/10 border border-red-600/20">
+              <ShieldCheck className="h-12 w-12 text-red-600" />
+              <p className="font-bold uppercase text-sm">Jūs jau turite administratoriaus teises.</p>
+              <Button 
+                className="bg-red-600 hover:bg-red-700 text-white w-full" 
+                onClick={() => router.push('/dashboard')}
+              >
+                Eiti į Valdymo Skydą
+              </Button>
             </div>
           ) : (
-             <div className="flex flex-col items-center text-center gap-4 p-4 rounded-lg bg-destructive/10">
-                <ShieldAlert className="h-12 w-12 text-destructive" />
-                <p className="font-medium text-destructive-foreground">Jūs šiuo metu neturite administratoriaus teisių.</p>
-                <Button onClick={handleAssignRole} disabled={isProcessing}>
+             <div className="flex flex-col items-center text-center gap-4 p-6 rounded-lg bg-zinc-900 border border-zinc-800">
+                <ShieldAlert className="h-12 w-12 text-zinc-600" />
+                <p className="text-zinc-400 text-sm">Jūs šiuo metu neturite administratoriaus statuso duomenų bazėje.</p>
+                <Button 
+                  className="bg-white text-black hover:bg-zinc-200 w-full font-bold"
+                  onClick={handleAssignRole} 
+                  disabled={isProcessing}
+                >
                   {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Suteikti Admin Teises
+                  Aktyvuoti Admin Prieigą
                 </Button>
             </div>
           )}
-           <p className="text-xs text-muted-foreground text-center mt-4">
-            Šis veiksmas reikalingas tik vieną kartą. Jis įrašo jūsų vartotojo ID į specialią
-            kolekciją Firestore duomenų bazėje, kurią saugumo taisyklės naudoja patikrinti administratoriaus statusą.
-          </p>
         </CardContent>
       </Card>
     </div>
